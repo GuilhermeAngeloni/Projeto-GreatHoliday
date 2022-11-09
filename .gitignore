@@ -3,3 +3,6 @@
 /Include/
 /pyvenv.cfg
 /pip-selfcheck.json
+/db.sqlite3
+/api/migrations/
+/GreatHoliday/migrations/
