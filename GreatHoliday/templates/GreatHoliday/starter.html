@@ -400,7 +400,7 @@
     <div class="p-3">
       <h5>Title</h5>
       <p>Sidebar content</p>
-    </div>
+    </div>n
   </aside> -->
 
     <footer class="main-footer">
@@ -415,5 +415,23 @@
     <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
     <script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
     <script src="{% static 'dist/js/adminlte.min.js' %}"></script>
+    <script>
+      const context = {
+        search: "{{search}}",
+        year: "{{year}}",
+        country: "{{country}}",
+        forecasts: JSON.parse("{{forecasts|escapejs}}".replaceAll(`'`, `"`)),
+        today: JSON.parse("{{today|escapejs}}".replaceAll(`'`, `"`)),
+        location: JSON.parse("{{location|escapejs}}".replaceAll(`'`, `"`)),
+        holidays: JSON.parse(
+          ("{{resultHolidays|escapejs}}" || "{}").replaceAll(`'`, `"`)
+        ),
+        detailsCity: JSON.parse(
+          ("{{resultDetailsCity|escapejs}}" || "{}").replaceAll(`'`, `"`)
+        ),
+      };
+
+      console.log(context);
+    </script>
   </body>
 </html>

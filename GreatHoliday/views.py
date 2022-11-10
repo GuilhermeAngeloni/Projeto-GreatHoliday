@@ -66,7 +66,7 @@ def search(request):
         }
         return render(request, 'GreatHoliday/starter.html', context)
 
-    print(resultDetailsCity)
+    # print(resultDetailsCity)
 
     # Pesquisa feriados
     r = requests.get("https://date.nager.at/api/v2/publicholidays/" + year + "/" + country)
@@ -94,6 +94,7 @@ def search(request):
         'holidays': resultHolidays,
         'detailsCity': resultDetailsCity
     }
+    print(context)
 
     return render(request, 'GreatHoliday/starter.html', context)
 
