@@ -116,3 +116,7 @@ def requestWeather(request, location):
     data = res.read()
 
     return HttpResponse(data)
+
+def login(request):
+    
+    return render(request, 'GreatHoliday/login.html')
