@@ -6,7 +6,7 @@ import json
 from .models import *
 import uuid
 
-def SalvarClimas(arr, conta):
+def SalvarClimas(arr, conta):   
     for i in arr:
         try:
             clima = Preferenciais_Tempo(tipo_tempo=i, cadastro=conta)

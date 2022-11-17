@@ -3,6 +3,10 @@ from django.http import HttpResponse
 import http.client
 import requests
 import json
+from multiprocessing import context
+from unicodedata import name
+from django.shortcuts import render
+from django.http import HttpResponse
 
 
 def index(request):
@@ -117,6 +121,15 @@ def requestWeather(request, location):
 
     return HttpResponse(data)
 
-def login(request):
+def login(request, email, senha):
+    email = email
+    senha = senha
+
+    r = request.get('http://127.0.0.1:8000/api',
+        data={"Email": email, "Senha": senha}
+    )
     
+    
+
+
     return render(request, 'GreatHoliday/login.html')
