@@ -25,7 +25,7 @@ def search(request):
     }
     conn = http.client.HTTPSConnection("yahoo-weather5 .p.rapidapi.com")
     conn.request(
-        "GET", 
+        "GET",
         "/weather?location=" + search + "&format=json&u=c",
         headers=headers
     )
@@ -33,8 +33,8 @@ def search(request):
     data = res.read()
     resultWeather = json.loads(data)
     country = list(countries.keys())[list(countries.values()).index(resultWeather["location"]["country"])]
-    
-    
+
+
     # Pesquisa feriados
     holidayRequest = requests.get("https://date.nager.at/api/v3/publicholidays/" + year + "/" + country)
     resultHolidays = json.loads(holidayRequest.text)
@@ -53,7 +53,7 @@ def search(request):
     }
     conn2 = http.client.HTTPSConnection("wft-geo-db.p.rapidapi.com")
     conn2.request(
-        "GET", 
+        "GET",
         "/v1/geo/adminDivisions?countryIds=" + country + "&minPopulation=500000",
         headers=headers2
     )
@@ -104,8 +104,18 @@ def login(request):
   #  r = request.get('http://127.0.0.1:8000/api',
    #     data={"Email": email, "Senha": senha}
     #)
-    
-    
+
+
 
 
     return render(request, 'GreatHoliday/login.html')
+
+def cadastrar(request):
+    user = request.POST.get("userLogin")
+    email = request.POST.get("userEmail")
+    senha = request.POST.get("userPassword")
+
+    r = requests.post('http://127.0.0.1:8000/api/new',
+                    json={"Nome": user, "Email": email, "Senha": senha, "Unidade_Temperatura": "C"}
+    )
+    print(r)
