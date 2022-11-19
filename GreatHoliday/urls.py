@@ -3,7 +3,6 @@ from GreatHoliday import views
 
 urlpatterns = [
     path('', views.index),
-    path('login', views.login),
     path('search', views.search, name='search'),
     path('weather/<str:location>', views.requestWeather),
 ]

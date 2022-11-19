@@ -241,6 +241,12 @@
       {% if token %}
         window.localStorage.setItem("token", "{{token}}");
       {% endif %}
+      {% if conta %}
+        let parsed = JSON.parse('{{conta|safe}}');
+        for(let [key, value] of Object.entries(parsed)) {
+          window.localStorage.setItem(key, value);
+        }
+      {% endif %}
 
       const context = {
         search: "{{search}}" || "",

@@ -136,5 +136,5 @@ def logar(request):
     else:
         obj = json.loads(json.loads(r.text)) #duas vezes por conta dos \ da formatação
         context["token"] = obj["token"]
-        context["cadastro"] = obj["cadastro"]
+        context["conta"] = json.dumps(obj["cadastro"])
     return render(request, 'GreatHoliday/start.html', context)
