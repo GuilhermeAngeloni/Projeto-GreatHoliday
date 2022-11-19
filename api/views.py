@@ -97,15 +97,16 @@ def AtualizarCadastro(request):
 
     return Response(status=status.HTTP_200_OK)
 
-
-@api_view(['POST','GET','PUT'])
-def Crud(request):
+@api_view(['POST','PATCH'])
+def GetAndUpdate(request):
     if request.method == 'POST':
-        return NovoCadastro(request)
-    elif request.method == 'GET':
         return FazerLogin(request)
-    elif request.method == 'PUT':
+    elif request.method == 'PATCH':
         return AtualizarCadastro(request)
 
+@api_view(['POST',])
+def CreateAccount(request):
+    if request.method == 'POST':
+        return NovoCadastro(request)
 
 
