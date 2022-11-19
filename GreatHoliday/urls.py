@@ -6,5 +6,4 @@ urlpatterns = [
     path('login', views.login),
     path('search', views.search, name='search'),
     path('weather/<str:location>', views.requestWeather),
-    path('cadastrar', views.cadastrar, name='cadastrar'),
 ]

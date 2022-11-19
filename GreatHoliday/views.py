@@ -10,6 +10,12 @@ import json
 
 
 def index(request):
+    if request.method == 'POST':
+        if 'newLogin' in request.POST:
+            return cadastrar(request)
+        elif 'usrEmail' in request.POST:
+            return logar(request)
+
     context = {'search': ""}
     return render(request, 'GreatHoliday/start.html', context)
 
@@ -99,23 +105,36 @@ def requestWeather(request, location):
 
     return HttpResponse(data)
 
-def login(request):
-
-  #  r = request.get('http://127.0.0.1:8000/api',
-   #     data={"Email": email, "Senha": senha}
-    #)
-
-
-
-
-    return render(request, 'GreatHoliday/login.html')
-
 def cadastrar(request):
-    user = request.POST.get("userLogin")
-    email = request.POST.get("userEmail")
-    senha = request.POST.get("userPassword")
+    user = request.POST.get("newLogin")
+    email = request.POST.get("newEmail")
+    senha = request.POST.get("newPassword")
 
     r = requests.post('http://127.0.0.1:8000/api/new',
                     json={"Nome": user, "Email": email, "Senha": senha, "Unidade_Temperatura": "C"}
     )
-    print(r)
+    alert = ""
+    if r.status_code != 200:
+        alert = "E-mail/Usuario já utilizados"
+    else:
+        alert = "Cadastro feito com sucesso, por favor faça o login"
+
+    context = {'search': "", "alert": alert}
+    return render(request, 'GreatHoliday/start.html', context)
+
+def logar(request):
+    email = request.POST.get("usrEmail")
+    senha = request.POST.get("usrPassword")
+
+    r = requests.post('http://127.0.0.1:8000/api/',
+                      json={"Email": email, "Senha": senha}
+    )
+
+    context = {'search': ""}
+    if r.status_code != 200:
+        context["alert"] = "E-mail/Usuario invalidos"
+    else:
+        obj = json.loads(json.loads(r.text)) #duas vezes por conta dos \ da formatação
+        context["token"] = obj["token"]
+        context["cadastro"] = obj["cadastro"]
+    return render(request, 'GreatHoliday/start.html', context)

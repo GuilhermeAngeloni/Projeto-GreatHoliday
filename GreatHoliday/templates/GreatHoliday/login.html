@@ -1,49 +1,37 @@
-{% extends 'GreatHoliday/starter.html' %}
 {% load static %}
 
 {% block login %}
-  <div class="box-parent-login">
-    <div class="well bg-white box-login">
-      <h1 class="ls-login-logo">GreatHoliday</h1>
-      <form role="form">
-        <fieldset>
-   
-          <div class="form-group ls-login-user">
-            <label for="userLogin">Usuário/Email</label>
-            <input class="form-control ls-login-bg-user input-lg" id="userLogin" type="text" aria-label="Usuário" placeholder="Usuário">
-          </div>
-   
-          <div class="form-group ls-login-password">
-            <label for="userPassword">Senha</label>
-            <input class="form-control ls-login-bg-password input-lg" id="userPassword" type="password" aria-label="Senha" placeholder="Senha">
-          </div>
-   
-        </fieldset>
-      </form>
+<div class="modal fade" id="signInModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Tela de Login</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+      <div class="modal-body">
+        <form  method="post">
+            {% csrf_token %}
+            <fieldset>
+                <div class="form-group ls-login-user">
+                  <label for="userEmail">Email</label>
+                  <input class="form-control ls-login-bg-user input-lg" name="usrEmail" type="text" aria-label="Usuário" placeholder="E-mail">
+                </div>
+
+                <div class="form-group ls-login-password">
+                  <label for="userPassword">Senha</label>
+                  <input class="form-control ls-login-bg-password input-lg" name="usrPassword" type="password" aria-label="Senha" placeholder="Senha">
+                </div>
+            </fieldset>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Logar</button>
+            </div>
+        </form>
+      </div>
     </div>
   </div>
-  <div class="box-parent-login">
-    <div class="well bg-white box-login">
-      <form role="form">
-        <fieldset>
-
-          <div class="form-group ls-login-user">
-            <label for="userLogin">Nome</label>
-            <input class="form-control ls-login-bg-user input-lg" id="userLogin" type="text" aria-label="Usuário" placeholder="Usuário">
-          </div>
-
-          <div class="form-group ls-login-user">
-            <label for="userLogin">Email</label>
-            <input class="form-control ls-login-bg-user input-lg" id="userLogin" type="text" aria-label="Usuário" placeholder="Usuário">
-          </div>
-   
-          <div class="form-group ls-login-password">
-            <label for="userPassword">Senha</label>
-            <input class="form-control ls-login-bg-password input-lg" id="userPassword" type="password" aria-label="Senha" placeholder="Senha">
-          </div>
-   
-        </fieldset>
-      </form>
-    </div>
-  </div>
+</div>
 {% endblock %}
