@@ -1,0 +1,43 @@
+{% extends 'GreatHoliday/starter.html' %}
+{% load static %}
+
+{% block search %}
+  <div style="height: 600px; background-color: #dbdbdb;">
+    <div class="d-flex justify-content-center align-items-center h-100">
+      <div
+        class="d-flex justify-content-center flex-column"
+        style=" width: 100%; max-width: 800px; height: 100%; padding: 20px;"
+      >
+        <label class="text-center">Pesquise uma cidade</label>
+  
+        <form action="{% url 'search' %}" method="get">
+          {% csrf_token %}
+          <div class="input-group mb-3">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Digite uma cidade..."
+              aria-label="Digite uma cidade..."
+              aria-describedby="button-search-addon"
+              value="{{ search }}"
+              name="search"
+            />
+            <button
+              id="button-search-addon"
+              type="submit"
+              class="btn btn-primary"
+
+            >
+              PESQUISAR
+            </button>
+          </div>
+        </form>
+
+      </div>
+
+
+
+      
+    </div>
+  </div>
+{% endblock %}

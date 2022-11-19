@@ -1,89 +1,68 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.shortcuts import render
+from django.http import HttpResponse
+from GreatHoliday.constants import countries
+from datetime import datetime
 import http.client
 import requests
 import json
-from multiprocessing import context
-from unicodedata import name
-from django.shortcuts import render
-from django.http import HttpResponse
 
 
 def index(request):
-    context = {'search': "", 'year': "2022", 'country': "BR"}
-    return render(request, 'GreatHoliday/starter.html', context)
+    context = {'search': ""}
+    return render(request, 'GreatHoliday/start.html', context)
 
 
 def search(request):
+    search = request.GET.get("search").replace(" ", "")
+    year = str(datetime.now().year)
 
     # Pesquisa previsão do tempo
-    conn = http.client.HTTPSConnection("yahoo-weather5.p.rapidapi.com")
-
     headers = {
         'X-RapidAPI-Key': "6fda019572mshcbe2cbe3d6390fbp146768jsn1ac05fc9b673",
         'X-RapidAPI-Host': "yahoo-weather5.p.rapidapi.com"
     }
-
-    search = request.GET.get("search").replace(" ", "")
-    year = request.GET.get("year")
-    country = request.GET.get("country")
-
-    conn.request("GET", "/weather?location=" + search + "&format=json&u=c",
-                 headers=headers)
-
+    conn = http.client.HTTPSConnection("yahoo-weather5 .p.rapidapi.com")
+    conn.request(
+        "GET", 
+        "/weather?location=" + search + "&format=json&u=c",
+        headers=headers
+    )
     res = conn.getresponse()
     data = res.read()
     resultWeather = json.loads(data)
-
-    if resultWeather is None:
-        context = {
-            'search': search,
-            'year': year,
-            'country': country,
-            'error': "Error ao realizar a pesquisa - Weather"
-        }
-        return render(request, 'GreatHoliday/starter.html', context)
-
+    country = list(countries.keys())[list(countries.values()).index(resultWeather["location"]["country"])]
+    
+    
     # Pesquisa feriados
-    r = requests.get("https://date.nager.at/api/v2/publicholidays/" + year + "/" + country)
-    resultHolidays = json.loads(r.text)
+    holidayRequest = requests.get("https://date.nager.at/api/v3/publicholidays/" + year + "/" + country)
+    resultHolidays = json.loads(holidayRequest.text)
 
-    if resultHolidays is None:
-        context = {
-            'search': search,
-            'year': year,
-            'country': country,
-            'error': "Error ao realizar a pesquisa - Holidays"
-        }
-        return render(request, 'GreatHoliday/starter.html', context)
 
     # Pesquisa detalhes cidade
-    r2 = requests.get("https://nominatim.openstreetmap.org/search.php?city="+ search +"&format=jsonv2")
-    resultDetailsCity = json.loads(r2.text)
+    cityDetailsRequest = requests.get("https://nominatim.openstreetmap.org/search.php?city="+ search +"&format=jsonv2")
+    resultDetailsCity = json.loads(cityDetailsRequest.text)
 
-    if resultDetailsCity is None:
-        context = {
-            'search': search,
-            'year': year,
-            'country': country,
-            'error': "Error ao realizar a pesquisa - Details City"
-        }
-        return render(request, 'GreatHoliday/starter.html', context)
 
-    # print(resultDetailsCity)
 
-    # Pesquisa feriados
-    r = requests.get("https://date.nager.at/api/v2/publicholidays/" + year + "/" + country)
-    resultHolidays = json.loads(r.text)
+    # outras cidades
+    headers2 = {
+        'X-RapidAPI-Key': 'e94e7fef38msh5b0ab2b8907177fp1bd3d1jsn5b0f6c77ca72',
+        'X-RapidAPI-Host': 'wft-geo-db.p.rapidapi.com'
+    }
+    conn2 = http.client.HTTPSConnection("wft-geo-db.p.rapidapi.com")
+    conn2.request(
+        "GET", 
+        "/v1/geo/adminDivisions?countryIds=" + country + "&minPopulation=500000",
+        headers=headers2
+    )
 
-    if resultHolidays is None:
-        context = {
-            'search': search,
-            'year': year,
-            'country': country,
-            'error': "Error ao realizar a pesquisa - Holidays"
-        }
-        return render(request, 'GreatHoliday/starter.html', context)
+    res2 = conn2.getresponse()
+    data2 = res2.read()
+    anotherCities = json.loads(data2)
+    print(anotherCities)
+
 
     location = resultWeather["location"]
     forecasts = resultWeather["forecasts"][:7]
@@ -98,9 +77,8 @@ def search(request):
         'holidays': resultHolidays,
         'detailsCity': resultDetailsCity
     }
-    print(context)
 
-    return render(request, 'GreatHoliday/starter.html', context)
+    return render(request, 'GreatHoliday/searchresult.html', context)
 
 
 def requestWeather(request, location):
@@ -121,13 +99,11 @@ def requestWeather(request, location):
 
     return HttpResponse(data)
 
-def login(request, email, senha):
-    email = email
-    senha = senha
+def login(request):
 
-    r = request.get('http://127.0.0.1:8000/api',
-        data={"Email": email, "Senha": senha}
-    )
+  #  r = request.get('http://127.0.0.1:8000/api',
+   #     data={"Email": email, "Senha": senha}
+    #)
     
     
 

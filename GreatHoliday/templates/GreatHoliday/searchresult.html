@@ -1,0 +1,231 @@
+{% extends 'GreatHoliday/starter.html' %}
+{% load static %}
+
+{% block search %}
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-body">
+          <label>Pesquisar...</label>
+
+          <form action="{% url 'search' %}" method="get">
+            {% csrf_token %}
+            <div class="input-group mb-3">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Digite uma cidade..."
+                aria-label="Digite uma cidade..."
+                aria-describedby="button-search-addon"
+                value="{{ search }}"
+                name="search"
+              />
+              <button
+                id="button-search-addon"
+                type="submit"
+                class="btn btn-outline-secondary"
+              >
+                PESQUISAR
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    {%if error %}
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">{{ error }}</h5>
+        </div>
+      </div>
+    </div>
+    {% endif %} {%if search %}
+
+    <div class="col-6">
+      <div class="card">
+        asdsads
+      </div>
+    </div>
+
+    <div class="col-6">
+      <div class="card">
+        <div class="card-header">Previsão do tempo</div>
+        <div class="card-body d-flex">
+          <div
+            class="d-flex p-4 flex-column justify-content-center align-items-center"
+            style="width: 260px"
+          >
+            {% if today %}
+            <p class="text-center h5" style="width: 100%">
+              {{location.city}} - {{location.region}}
+            </p>
+            <p
+              class="text-center font-weight-light"
+              style="width: 100%"
+            >
+              Today
+            </p>
+
+            <div
+              class="d-flex justify-content-center align-items-center"
+              style="gap: 1rem"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="48"
+                height="48"
+                fill="currentColor"
+                class="bi bi-cloud-drizzle-fill"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M4.158 12.025a.5.5 0 0 1 .316.633l-.5 1.5a.5.5 0 0 1-.948-.316l.5-1.5a.5.5 0 0 1 .632-.317zm6 0a.5.5 0 0 1 .316.633l-.5 1.5a.5.5 0 0 1-.948-.316l.5-1.5a.5.5 0 0 1 .632-.317zm-3.5 1.5a.5.5 0 0 1 .316.633l-.5 1.5a.5.5 0 0 1-.948-.316l.5-1.5a.5.5 0 0 1 .632-.317zm6 0a.5.5 0 0 1 .316.633l-.5 1.5a.5.5 0 1 1-.948-.316l.5-1.5a.5.5 0 0 1 .632-.317zm.747-8.498a5.001 5.001 0 0 0-9.499-1.004A3.5 3.5 0 1 0 3.5 11H13a3 3 0 0 0 .405-5.973z"
+                />
+              </svg>
+              <div>
+                <p class="font-weight-bold h1" style="margin: 0">
+                  {{today.high}}°C
+                </p>
+                <p class="font-weight-bold h3 text-muted">
+                  {{today.low}}°C
+                </p>
+              </div>
+            </div>
+
+            <span class="text-muted">{{today.text}}</span>
+            {% endif %}
+          </div>
+          <div
+            class="flex-grow-1 p-2 d-flex flex-column align-items-center"
+          >
+            <p class="h5">Próximos 7 dias</p>
+            <div class="d-flex">
+              {% if forecasts %} {% for dayWeek in forecasts %}
+              <div
+                class="p-2 d-flex flex-column justify-content-center align-items-center"
+                style="width: 130px; gap: 12px"
+              >
+                <p
+                  class="h5 text-bold text-uppercase"
+                  style="margin: 0"
+                >
+                  {{dayWeek.day}}
+                </p>
+                <span>{{dayWeek.text}}</span>
+                <p class="h3 text-bold" style="margin: 0">
+                  {{dayWeek.high}}°C
+                </p>
+                <p class="text-muted h3 text-bold" style="margin: 0">
+                  {{dayWeek.low}}°C
+                </p>
+              </div>
+              {% endfor %} {% else %}
+              <p>Sem dados</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-header">Previsão do tempo</div>
+        <div class="card-body d-flex">
+          <div
+            class="d-flex p-4 flex-column justify-content-center align-items-center"
+            style="width: 260px"
+          >
+            {% if today %}
+            <p class="text-center h5" style="width: 100%">
+              {{location.city}} - {{location.region}}
+            </p>
+            <p
+              class="text-center font-weight-light"
+              style="width: 100%"
+            >
+              Today
+            </p>
+
+            <div
+              class="d-flex justify-content-center align-items-center"
+              style="gap: 1rem"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="48"
+                height="48"
+                fill="currentColor"
+                class="bi bi-cloud-drizzle-fill"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M4.158 12.025a.5.5 0 0 1 .316.633l-.5 1.5a.5.5 0 0 1-.948-.316l.5-1.5a.5.5 0 0 1 .632-.317zm6 0a.5.5 0 0 1 .316.633l-.5 1.5a.5.5 0 0 1-.948-.316l.5-1.5a.5.5 0 0 1 .632-.317zm-3.5 1.5a.5.5 0 0 1 .316.633l-.5 1.5a.5.5 0 0 1-.948-.316l.5-1.5a.5.5 0 0 1 .632-.317zm6 0a.5.5 0 0 1 .316.633l-.5 1.5a.5.5 0 1 1-.948-.316l.5-1.5a.5.5 0 0 1 .632-.317zm.747-8.498a5.001 5.001 0 0 0-9.499-1.004A3.5 3.5 0 1 0 3.5 11H13a3 3 0 0 0 .405-5.973z"
+                />
+              </svg>
+              <div>
+                <p class="font-weight-bold h1" style="margin: 0">
+                  {{today.high}}°C
+                </p>
+                <p class="font-weight-bold h3 text-muted">
+                  {{today.low}}°C
+                </p>
+              </div>
+            </div>
+
+            <span class="text-muted">{{today.text}}</span>
+            {% endif %}
+          </div>
+          <div
+            class="flex-grow-1 p-2 d-flex flex-column align-items-center"
+          >
+            <p class="h5">Próximos 7 dias</p>
+            <div class="d-flex">
+              {% if forecasts %} {% for dayWeek in forecasts %}
+              <div
+                class="p-2 d-flex flex-column justify-content-center align-items-center"
+                style="width: 130px; gap: 12px"
+              >
+                <p
+                  class="h5 text-bold text-uppercase"
+                  style="margin: 0"
+                >
+                  {{dayWeek.day}}
+                </p>
+                <span>{{dayWeek.text}}</span>
+                <p class="h3 text-bold" style="margin: 0">
+                  {{dayWeek.high}}°C
+                </p>
+                <p class="text-muted h3 text-bold" style="margin: 0">
+                  {{dayWeek.low}}°C
+                </p>
+              </div>
+              {% endfor %} {% else %}
+              <p>Sem dados</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-header">Feriados</div>
+        <div class="card-body">
+          {%if holidays %}
+          {% for h in holidays %} 
+            <div class="d-flex justify-content-between my-2 mx-4 ">
+              <span style="margin: 0 3px">{{h.localName}}</span>
+              <span style="margin: 0 3px">{{h.date}}</span>
+            </div>
+            <hr>
+              
+          {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+{% endblock %}
