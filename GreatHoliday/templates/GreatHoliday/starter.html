@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -36,16 +36,21 @@
   <body>
     <nav class="d-flex p-4">
       <h1 class="m-0">Great Holiday</h1>
-      <button 
-        id="button-search-addon"
-        type="button" 
-        class="btn btn-sm " 
-        data-toggle="modal" 
-        data-target="#signUpModal" >
-        Cadastrar-se
-      </button>
 
-      <button type="button" class="btn btn-sm " data-toggle="modal" data-target="#signInModal">Login</button>
+      {% if not contaObj %}
+        <button
+          id="button-search-addon"
+          type="button"
+          class="btn btn-sm "
+          data-toggle="modal"
+          data-target="#signUpModal" >
+          Cadastrar-se
+        </button>
+
+        <button type="button" class="btn btn-sm" data-toggle="modal" data-target="#signInModal">Login</button>
+      {% else %}
+        <h3 class="ml-5">Olá, {{ contaObj.Nome }}</h3>
+      {% endif %}
     </nav>
 
     
@@ -58,6 +63,50 @@
         {% block searchresult %}
         {% endblock %}
       </div>
+
+      {% if token %}
+        {% if cidadesPreferencias %}
+          <div class="mt-3 mb-3 bg-secondary w-100 p-2">
+            <h3>Cidades que possam te interessar</h3>
+            {% for cidade in cidadesPreferencias %}
+              <a href="/searchbypos/lat={{ cidade.lat }}&long={{ cidade.long }}" style="color: #663300" class="d-block mt-2 link-info text-warning">{{ cidade.nome }}</a>
+              {% if cidade.holiday %}
+                <span class="ml-2">Proximo feriado: {{cidade.holiday}}</span>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <div class="d-flex mt-3 mb-3 bg-secondary w-100">
+            <form class="ml-4 mb-3 w-100" method="post">
+              {% csrf_token %}
+                <div>
+                    <span>Unidade de temperatura: </span>
+                    <select class="mt-3 mb-3 ml-2" name="unidade_temp">
+                        <option value="C" {% if contaObj.Unidade_Temperatura == "C" %} selected {% endif %}>Celsius</option>
+                        <option value="F" {% if contaObj.Unidade_Temperatura == "F" %} selected {% endif %}>Fahrenheit</option>
+                    </select>
+                </div>
+                <div>
+                  <input type="text" id="configPais" placeholder="Digite um pais" class="p-1 w-25"/>
+                  <button type="button" class="bg-primary" onclick="configurarNovoPais()">Adicionar</button>
+                </div>
+                <div id="configPaisesDiv" class="mt-2">
+                  {% for pais in contaObj.Preferencias_Paises %}
+                    <button type="button" id="configPais-{{ pais }}" ondblclick="removerPais('{{ pais }}')" class="bg-info ml-1">{{pais}}</button>
+                  {% endfor %}
+                  <select name="paises" id="configPaises" multiple hidden>
+                  {% for pais in contaObj.Preferencias_Paises %}
+                    <option value="{{ pais }}" selected>{{pais}}</option>
+                  {% endfor %}
+                  </select>
+                </div>
+              <button type="submit" class="mt-3 w-25 bg-primary">Atualizar cadastro</button>
+              <input name="usrEmail" value="{{ contaObj.Email }}" hidden/>
+              <input name="UsrToken" value="{{ token }}" hidden/>
+            </form>
+        </div>
+      {% endif %}
 
 
       {% block cadastro %}
@@ -238,15 +287,26 @@
         if(alertMsg.length) alert(alertMsg);
       };
 
-      {% if token %}
+      {% if token and conta %}
         window.localStorage.setItem("token", "{{token}}");
-      {% endif %}
-      {% if conta %}
         let parsed = JSON.parse('{{conta|safe}}');
         for(let [key, value] of Object.entries(parsed)) {
           window.localStorage.setItem(key, value);
         }
       {% endif %}
+
+      function configurarNovoPais() {
+        let pais = $("#configPais").val().toUpperCase();
+        if(pais.length != 2 || $("#configPais-"+pais).length) return; //não precisa adicionar se já esta na lista ou se o codigo for invalido
+
+        $("#configPaises").append(`<option value="${pais}" selected>${pais}</option>>`);
+        $("#configPaisesDiv").append(`<button type="button" id="configPais-${pais}" ondblclick="removerPais('${pais}')" class="bg-info ml-1">${pais}</button>`);
+        $("#configPais").val("");
+      }
+      function removerPais(id) {
+        $(`#configPaises option[value='${id}']`).remove();
+        $("#configPais-"+id).remove();
+      }
 
       const context = {
         search: "{{search}}" || "",

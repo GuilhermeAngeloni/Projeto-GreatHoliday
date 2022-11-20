@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 import json
-
+import datetime
 from .models import *
 import uuid
 
@@ -46,19 +46,30 @@ def NovoCadastro(request):
 def FazerLogin(request):
     email = None
     senha = None
+    jwt = None
     try:
         email = request.data["Email"]
-        senha = request.data["Senha"]
+        if "Senha" in request.data:
+            senha = request.data["Senha"]
+        elif "jwt" in request.headers:
+            jwt = request.headers["jwt"]
+        else:
+            raise Exception("")
     except:
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
     cadastro = None
     try:
-        cadastro = Cadastro.objects.get(Email=email, Senha=senha)
+        if senha:
+            cadastro = Cadastro.objects.get(Email=email, Senha=senha)
+        else:
+            cadastro = Cadastro.objects.get(Email=email, token=jwt)
+            #precisava validar se a data do token ainda é valida mas esta dando pau de timezones, não consegui arrumar
     except:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     cadastro.token = str(uuid.uuid4())
+    cadastro.Token_Validade = datetime.datetime.now() + datetime.timedelta(hours=3)
     cadastro.save()
 
     resposta = {}

@@ -1,5 +1,6 @@
 from django.db import models
 import json
+import datetime
 
 class Cadastro(models.Model):
     ID = models.AutoField(primary_key=True)
@@ -8,6 +9,7 @@ class Cadastro(models.Model):
     Senha = models.CharField(max_length=100)
     Unidade_Temperatura = models.CharField(max_length=1)
     token = models.CharField(max_length=100)
+    Token_Validade = models.DateTimeField(default=datetime.datetime(1900, 1, 1))
 
     def ToJson(self):
         j = {}

@@ -3,16 +3,18 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.http import HttpResponse
 from GreatHoliday.constants import countries
-from datetime import datetime
 import http.client
 import requests
 import json
-
+from datetime import datetime
+import datetime
 
 def index(request):
     if request.method == 'POST':
         if 'newLogin' in request.POST:
             return cadastrar(request)
+        elif 'unidade_temp' in request.POST:
+            return atualizar(request)
         elif 'usrEmail' in request.POST:
             return logar(request)
 
@@ -123,11 +125,14 @@ def cadastrar(request):
     return render(request, 'GreatHoliday/start.html', context)
 
 def logar(request):
-    email = request.POST.get("usrEmail")
-    senha = request.POST.get("usrPassword")
+    requestJson = {"Email": request.POST.get("usrEmail")}
+
+    if "usrPassword" in request.POST:
+        requestJson["Senha"] = request.POST.get("usrPassword")
 
     r = requests.post('http://127.0.0.1:8000/api/',
-                      json={"Email": email, "Senha": senha}
+                    json=requestJson,
+                    headers={"jwt": request.POST.get("UsrToken") if "UsrToken" in request.POST else ""}
     )
 
     context = {'search': ""}
@@ -136,5 +141,64 @@ def logar(request):
     else:
         obj = json.loads(json.loads(r.text)) #duas vezes por conta dos \ da formatação
         context["token"] = obj["token"]
+        context["contaObj"] = obj["cadastro"]
         context["conta"] = json.dumps(obj["cadastro"])
+
+        if "Preferencias_Paises" in obj["cadastro"]:
+            cidades = []
+            today = datetime.datetime.now()
+            year = today.strftime("%Y")
+
+            for pais in obj["cadastro"]["Preferencias_Paises"]:
+                #Carrega informações das 3 cidades mais populosas dos paises favoritados
+                r = requests.get("https://wft-geo-db.p.rapidapi.com/v1/geo/adminDivisions",
+                                 headers={
+                                    'X-RapidAPI-Key': 'e94e7fef38msh5b0ab2b8907177fp1bd3d1jsn5b0f6c77ca72',
+                                    'X-RapidAPI-Host': 'wft-geo-db.p.rapidapi.com'
+                                 },
+                                params={
+                                    "sort": '-population',
+                                    "minPopulation": 500000,
+                                    "countryIds": pais,
+                                    "limit": 3
+                                }
+                )
+                if r.status_code == 200:
+                    cidadesJson = json.loads(r.text)
+
+                    holidayRequest = requests.get("https://date.nager.at/api/v3/publicholidays/" + year + "/" + pais)
+                    resultHolidays = json.loads(holidayRequest.text)
+                    proxFeriado = None
+                    for feriado in resultHolidays:
+                        dataFeriado = datetime.datetime.strptime(feriado["date"], '%Y-%m-%d')
+                        qtdDias = (dataFeriado - today).days
+                        if qtdDias >= 0 and qtdDias <= 10:
+                            proxFeriado = feriado["name"] + " " + feriado["date"]
+                            break
+
+                    if "data" in cidadesJson:
+                        for city in cidadesJson["data"]:
+                            cidades.append({"nome": city["name"], "lat": city["latitude"], "long": city["longitude"], "holiday": proxFeriado})
+
+            context["cidadesPreferencias"] = cidades
+
     return render(request, 'GreatHoliday/start.html', context)
+
+def atualizar(request):
+    listaDePaises = request.POST.getlist('paises')
+    unidade_temperatura = request.POST.get("unidade_temp")
+    email = request.POST.get("usrEmail")
+    token = request.POST.get("UsrToken")
+
+    r = requests.patch('http://127.0.0.1:8000/api/',
+                      json={
+                            "Email": email,
+                            "Unidade_Temperatura": unidade_temperatura,
+                            "Preferencias_Paises": listaDePaises,
+                            #"Preferenciais_Tempo": ["fog"]
+                      },
+                      headers={
+                          "jwt": token
+                      }
+    )
+    return logar(request)
