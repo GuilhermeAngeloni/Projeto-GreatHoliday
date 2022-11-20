@@ -8,6 +8,7 @@ import requests
 import json
 from datetime import datetime
 import datetime
+import time
 
 def index(request):
     if request.method == 'POST':
@@ -24,14 +25,14 @@ def index(request):
 
 def search(request):
     search = request.GET.get("search").replace(" ", "")
-    year = str(datetime.now().year)
+    year = str(datetime.datetime.now().year)
 
     # Pesquisa previsão do tempo
     headers = {
         'X-RapidAPI-Key': "6fda019572mshcbe2cbe3d6390fbp146768jsn1ac05fc9b673",
         'X-RapidAPI-Host': "yahoo-weather5.p.rapidapi.com"
     }
-    conn = http.client.HTTPSConnection("yahoo-weather5 .p.rapidapi.com")
+    conn = http.client.HTTPSConnection("yahoo-weather5.p.rapidapi.com")
     conn.request(
         "GET",
         "/weather?location=" + search + "&format=json&u=c",
@@ -165,6 +166,7 @@ def logar(request):
                 )
                 if r.status_code == 200:
                     cidadesJson = json.loads(r.text)
+                    time.sleep(0.3)
 
                     holidayRequest = requests.get("https://date.nager.at/api/v3/publicholidays/" + year + "/" + pais)
                     resultHolidays = json.loads(holidayRequest.text)
