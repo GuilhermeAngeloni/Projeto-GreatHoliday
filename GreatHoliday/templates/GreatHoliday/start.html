@@ -10,7 +10,7 @@
       >
         <label class="text-center">Pesquise uma cidade</label>
   
-        <form action="{% url 'search' %}" method="get">
+        <form action="{% url 'search' %}" method="get" target="_blank">
           {% csrf_token %}
           <div class="input-group mb-3">
             <input
@@ -30,6 +30,13 @@
             >
               PESQUISAR
             </button>
+            <input
+                type="text"
+                value="C"
+                name="unit"
+                id="tempUnit"
+                hidden
+            />
           </div>
         </form>
 

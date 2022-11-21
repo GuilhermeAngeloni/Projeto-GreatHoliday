@@ -37,6 +37,9 @@ def index(request):
 def search(request):
     search = request.GET.get("search").replace(" ", "")
     year = str(datetime.datetime.now().year)
+    unidadeTemp = "c"
+    if "unit" in request.GET:
+        unidadeTemp = request.GET.get("unit").lower()
 
     # Pesquisa previsão do tempo
     headers = {
@@ -46,7 +49,7 @@ def search(request):
     conn = http.client.HTTPSConnection("yahoo-weather5.p.rapidapi.com")
     conn.request(
         "GET",
-        "/weather?location=" + search + "&format=json&u=c",
+        "/weather?location=" + search + "&format=json&u=" + unidadeTemp,
         headers=headers
     )
     res = conn.getresponse()
@@ -89,6 +92,7 @@ def search(request):
         'today': today,
         'location': location,
         'holidays': resultHolidays,
+        'unit': unidadeTemp.upper()
     }
 
     return render(request, 'GreatHoliday/searchresult.html', context)
