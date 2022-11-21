@@ -19,7 +19,18 @@ def index(request):
         elif 'usrEmail' in request.POST:
             return logar(request)
 
-    context = {'search': ""}
+    print(list(countries.keys()))
+
+
+    lista = []
+
+    for key, value in countries.items():
+        lista.append({"value": key, "label": value})
+
+    context = {
+        'search': "",
+        'countryCodes': lista
+    }
     return render(request, 'GreatHoliday/start.html', context)
 
 
@@ -47,12 +58,6 @@ def search(request):
     # Pesquisa feriados
     holidayRequest = requests.get("https://date.nager.at/api/v3/publicholidays/" + year + "/" + country)
     resultHolidays = json.loads(holidayRequest.text)
-
-
-    # Pesquisa detalhes cidade
-    cityDetailsRequest = requests.get("https://nominatim.openstreetmap.org/search.php?city="+ search +"&format=jsonv2")
-    resultDetailsCity = json.loads(cityDetailsRequest.text)
-
 
 
     # outras cidades
@@ -84,7 +89,6 @@ def search(request):
         'today': today,
         'location': location,
         'holidays': resultHolidays,
-        'detailsCity': resultDetailsCity
     }
 
     return render(request, 'GreatHoliday/searchresult.html', context)
@@ -137,6 +141,13 @@ def logar(request):
     )
 
     context = {'search': ""}
+    
+    lista2 = []
+    for key, value in countries.items():
+        lista2.append({"value": key, "label": value})
+
+    context['countryCodes'] = lista2
+
     if r.status_code != 200:
         context["alert"] = "E-mail/Usuario invalidos"
     else:
@@ -144,6 +155,7 @@ def logar(request):
         context["token"] = obj["token"]
         context["contaObj"] = obj["cadastro"]
         context["conta"] = json.dumps(obj["cadastro"])
+ 
 
         if "Preferencias_Paises" in obj["cadastro"]:
             cidades = []
@@ -180,7 +192,14 @@ def logar(request):
 
                     if "data" in cidadesJson:
                         for city in cidadesJson["data"]:
-                            cidades.append({"nome": city["name"], "lat": city["latitude"], "long": city["longitude"], "holiday": proxFeriado})
+                            cidadeUrl = requests.utils.quote(city["name"])
+                            cidades.append({
+                                "nome": city["name"], 
+                                "lat": city["latitude"], 
+                                "long": city["longitude"], 
+                                "holiday": proxFeriado,
+                                "url": cidadeUrl
+                            })
 
             context["cidadesPreferencias"] = cidades
 
