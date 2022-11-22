@@ -211,6 +211,7 @@ def logar(request):
 
 def atualizar(request):
     listaDePaises = request.POST.getlist('paises')
+    listaDeTempos = request.POST.getlist('tempos')
     unidade_temperatura = request.POST.get("unidade_temp")
     email = request.POST.get("usrEmail")
     token = request.POST.get("UsrToken")
@@ -220,7 +221,7 @@ def atualizar(request):
                             "Email": email,
                             "Unidade_Temperatura": unidade_temperatura,
                             "Preferencias_Paises": listaDePaises,
-                            #"Preferenciais_Tempo": ["fog"]
+                            "Preferenciais_Tempo": listaDeTempos
                       },
                       headers={
                           "jwt": token
